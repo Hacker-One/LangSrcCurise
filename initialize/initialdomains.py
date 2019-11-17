@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*- 
+﻿# -*- encoding: utf-8 -*- 
 import socket
 import django
 import os
@@ -78,7 +78,7 @@ def initialdomains():
     tasks = list(set([x.strip() for x in open(Dicts,'r').readlines()]))
     for task in tasks:
         try:
-            print('当前检测URL：{}'.format(task))
+            print('\n初始化子域名 : {}'.format(task))
             res = BeiAn(task).scan_seo()
             bid = str(res.get('备案编号'))
             bsex = str(res.get('备案性质'))

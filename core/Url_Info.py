@@ -46,25 +46,40 @@ class Get_Url_Info:
     def Requests(self):
         try:
             r = requests.get(url=self.url,headers={'User-Agent':random.choice(_Headers)},verify=False,timeout=self.timeout)
-            try:
-                encoding = requests.utils.get_encodings_from_content(r.text)[0]
-                #print(encoding)
-                content = r.content.decode(encoding,'replace')
-                #print(content)
-                return (content, r.headers, r.status_code)
-            except:
-                return (self.content, r.headers, r.status_code)
+            return (r.content,r.headers,r.status_code)
         except Exception as e:
-            #print(e)
-            return (self.content,self.headers,self.status)
+            try:
+                r = requests.get(url=self.url, headers={'User-Agent': random.choice(_Headers)}, verify=False,timeout=self.timeout)
+                return (r.content, r.headers, r.status_code)
+            except:
+                return (self.content,self.headers,self.status)
+        #     try:
+        #         encoding = requests.utils.get_encodings_from_content(r.text)[0]
+        #         #print(encoding)
+        #         content = r.content.decode(encoding,'replace')
+        #         #print(content)
+        #         return (content, r.headers, r.status_code)
+        #     except:
+        #         return (self.content, r.headers, r.status_code)
+        # except Exception as e:
+        #     #print(e)
+        #     return (self.content,self.headers,self.status)
 
     def get_title(self,content):
         if content == 'Error':
             return self.title
         try:
-            title_pattern = '<title>(.*?)</title>'
+            title_pattern = b'<title>(.*?)</title>'
             title = re.search(title_pattern, content, re.S | re.I).group(1)
-            return title.replace('\n', '').strip()
+            try:
+                title = title.decode().replace('\n', '').strip()
+                return title
+            except:
+                try:
+                    title = title.decode('gbk').replace('\n', '').strip()
+                    return title
+                except:
+                    return self.title
         except:
             return self.title
 
@@ -83,6 +98,15 @@ class Get_Url_Info:
         status = req[2]
         title = self.get_title(content)
         power,server = self.get_headers(headers)
+
+        try:
+            content = content.decode().replace(r'\r','').replace(r'\n','')
+        except:
+            try:
+                content = content.decode('gbk').replace(r'\r','').replace(r'\n','')
+            except:
+                content = self.content
+
         self.result = {
             'url':self.url,
             'title':title,
@@ -95,9 +119,9 @@ class Get_Url_Info:
         return self.result
 
 if __name__ == '__main__':
-    print(Get_Url_Info('http://t.wanmei.com/').Requests()[0])
-    # a = Get_Url_Info('http://t.wanmei.com/')
-    # print(a.get_info())
+    print(Get_Url_Info('https://www.163.com').Requests()[0])
+    a = Get_Url_Info('https://www.163.com')
+    print(a.get_info())
     # '''
     # 传入数据为 网址
     # 返回数据为

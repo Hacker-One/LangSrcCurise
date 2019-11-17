@@ -69,10 +69,7 @@ def Run_Cpu_Min():
             close_old_connections()
             Cpu_Min.objects.create(cpu=cpu,menory=men,network_send=new_send,network_recv=new_recv)
             Except_Log(stat=16,url='资源监控消耗',error=str(e))
-#
-# def on_done(future):
-#     # 因为每一个线程都有一个 connections，所以这里可以调用 close_all()，把本线程名下的所有连接关闭。
-#     connections.close_all()
+
 
 def get_host(url):
     url = url.split('//')[1]
@@ -164,7 +161,15 @@ def Add_Data_To_Url(url):
                 # 添加 网址索引
                 try:
                     try:
-                        Show_contents = pymysql.escape_string(Get_Url_Info(url).Requests()[0])
+                        Sconten = Get_Url_Info(url).Requests()[0]
+                        if Sconten == 'Error':
+                            pass
+                        else:
+                            try:
+                                Sconten = Sconten.decode()
+                            except:
+                                Sconten = '获取失败'
+                        Show_contents = pymysql.escape_string(Sconten)
                         Cont = Content()
                         Cont.url = url
                         Cont.content = Show_contents
@@ -245,6 +250,11 @@ def Change_IP_Info():
         time.sleep(random.randint(1,20))
         time.sleep(random.randint(1,20))
         time.sleep(random.randint(1,20))
+        time.sleep(random.randint(1,20))
+        time.sleep(random.randint(1,20))
+        time.sleep(random.randint(1,20))
+        time.sleep(random.randint(1,20))
+        time.sleep(random.randint(1,20))
         # 首先捕获一个值，设置为扫描中状态，但是要确保是事务
         try:
             target_ip = IP.objects.filter(get='否')[0]
@@ -267,8 +277,7 @@ def Change_IP_Info():
             open_port = servers.keys()
             check_alive_url = []
             for port in open_port:
-                check_alive_url.append('http://{}:{}'.format(ip, port))
-                check_alive_url.append('https://{}:{}'.format(ip, port))
+                check_alive_url.append('{}:{}'.format(ip, port))
             alive_url = Get_Alive_Url(check_alive_url)
             # 该IP上存活WEB，类型为列表，内容为多个字典
             host_type = IP_Res.get_host_type(ip)
@@ -364,6 +373,7 @@ def Change_IP_Info():
 
 def Change_ShowData_Info(Sub_Domains):
     try:
+        time.sleep(300)
         try:
             target_info = Show_Data.objects.filter(success='否')[0]
             ip = target_info.ip
