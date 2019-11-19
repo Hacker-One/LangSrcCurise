@@ -94,12 +94,17 @@ def get_title(r):
 
 def Requests(url):
     headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'}
-    url1 = None
-    url2 = None
+    url1 = 'http://'+url
+    url2 = 'https://'+url
+    title = '获取失败'
     title1 = '获取失败'
     title2 = '获取失败'
+    content1 = None
+    content2 = None
     try:
         r = requests.get(url='http://'+url,headers=headers,verify=False,timeout=20)
+        if b'text/html' in r.content or b'<title>' in r.content or b'</html>' in r.content:
+            content1 = r.content
         if r.status_code in Alive_Status:
             u = urlparse(str(r.url))
             title1 = get_title(r.content)
@@ -108,6 +113,8 @@ def Requests(url):
         pass
     try:
         r = requests.get(url='https://'+url,headers=headers,verify=False,timeout=20)
+        if b'text/html' in r.content or b'<title>' in r.content or b'</html>' in r.content:
+            content2 = r.content
         if r.status_code in Alive_Status:
             u = urlparse(str(r.url))
             title2 = get_title(r.content)
@@ -118,6 +125,10 @@ def Requests(url):
         return {url1: title1}
     if title2 != '获取失败':
         return {url2: title2}
+    if content1 != None:
+        return {url1:title}
+    if content2 != None:
+        return {url2:title}
 
 
 def Get_Alive_Url(urls):
