@@ -37,6 +37,7 @@ class BeiAn:
             return '暂无信息'
 
     def scan_seo(self):
+        r = 0
         urls = 'http://seo.chinaz.com/' + self.keyword
         # url,title,weights,ip,ages,whois_id,whois_type,whois_name,whois_time
         # 网址，标题，百度权重，ip信息，年龄，备案号，备案性质，备案名称，备案时间
@@ -66,10 +67,14 @@ class BeiAn:
                         r = req.content.decode(encoding, 'replace')
                     except Exception as e:
                         print('第4次请求失败....')
-
-        self.result['备案编号'] = self.get_info_from_pattren(self.whois_id, r)
-        self.result['备案性质'] = self.get_info_from_pattren(self.whois_type, r)
-        self.result['备案名称'] = self.get_info_from_pattren(self.whois_name, r)
+        if r == 0:
+            self.result['备案编号'] = '暂无数据'
+            self.result['备案性质'] = '暂无数据'
+            self.result['备案名称'] = '暂无数据'
+        else:
+            self.result['备案编号'] = self.get_info_from_pattren(self.whois_id, r)
+            self.result['备案性质'] = self.get_info_from_pattren(self.whois_type, r)
+            self.result['备案名称'] = self.get_info_from_pattren(self.whois_name, r)
 
         return self.result
 
